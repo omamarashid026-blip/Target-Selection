@@ -93,7 +93,7 @@ Where:
 
 ## 👨‍💻 Author
 
-Your Name: Laiba Nazeer
+Your Name: Omama Rashid
 Course: CS-555
 HCI AND CG
 
