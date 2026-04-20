@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Week 07 Lab - Target Selection</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      text-align: center;
+      font-family: Arial;
+    }
+    canvas {
+      background: #222;
+      display: block;
+      margin: auto;
+      border: 2px solid white;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Target Selection Task</h2>
+<p>Click the shaking green target as fast as possible</p>
+
+<canvas id="gameCanvas" width="800" height="500"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let startTime = null;
+
+// 🎯 Target (shaking)
+const target = {
+  baseX: 650,
+  baseY: 220,
+  size: 40
+};
+
+// 👻 Ghosts (distractors)
+let ghosts = [];
+for (let i = 0; i < 3; i++) {
+  ghosts.push({
+    x: Math.random() * 600,
+    y: Math.random() * 400,
+    vx: (Math.random() > 0.5 ? 2 : -2),
+    vy: (Math.random() > 0.5 ? 2 : -2),
+    size: 30
+  });
+}
+
+// 🖱 Mouse click
+canvas.addEventListener("click", function(e) {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  if (!startTime) startTime = performance.now();
+
+  const tx = target.baseX;
+  const ty = target.baseY;
+
+  if (mx > tx && mx < tx + target.size &&
+      my > ty && my < ty + target.size) {
+
+    let endTime = performance.now();
+    let timeTaken = ((endTime - startTime) / 1000).toFixed(3);
+
+    alert("Target clicked!\nTime: " + timeTaken + " seconds");
+    startTime = null;
+  }
+});
+
+// 🔄 Game loop
+function update() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw diagonal path (decision cue)
+  ctx.strokeStyle = "blue";
+  ctx.beginPath();
+  ctx.moveTo(50, 450);
+  ctx.lineTo(target.baseX, target.baseY);
+  ctx.stroke();
+
+  // Move & draw ghosts
+  ctx.fillStyle = "red";
+  ghosts.forEach(g => {
+    g.x += g.vx;
+    g.y += g.vy;
+
+    if (g.x < 0 || g.x > canvas.width) g.vx *= -1;
+    if (g.y < 0 || g.y > canvas.height) g.vy *= -1;
+
+    ctx.beginPath();
+    ctx.arc(g.x, g.y, g.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Draw shaking target
+  let shakeX = Math.random() * 6 - 3;
+  let shakeY = Math.random() * 6 - 3;
+
+  ctx.fillStyle = "lime";
+  ctx.fillRect(
+    target.baseX + shakeX,
+    target.baseY + shakeY,
+    target.size,
+    target.size
+  );
+
+  requestAnimationFrame(update);
+}
+
+update();
+</script>
+
+</body>
+</html>
